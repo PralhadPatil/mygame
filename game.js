@@ -9,7 +9,7 @@ window.onload = function(){
     canvas.width = canvas.height = dimension;
     var offset = dimension / noOfLinesToBeDrawn;
     //all vertical lines
-   
+     
     var startX = canvas.offsetLeft;
     var startY = canvas.offsetTop;
     
@@ -20,6 +20,7 @@ window.onload = function(){
                  startY + canvas.height
                 );
     }
+    
     
    
 }
