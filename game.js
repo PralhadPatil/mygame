@@ -13,18 +13,22 @@ window.onload = function(){
     var startX = canvas.offsetLeft;
     var startY = canvas.offsetTop;
     
-    for(var i = 0; i < noOfLinesToBeDrawn; i++){
+    for(var i = 0; i <= noOfLinesToBeDrawn; i++){
         drawLine(startX + (offset * i),
                  startY,
                  startX + (offset * i),
                  startY + canvas.height
                 );
+		drawLine(startX,
+				 startY + (offset * i),
+				 startX + canvas.width,
+				 startY + (offset * i)
+				);
     }
-    
-    
-   
 }
-
+/*
+	Function to draw line between 2 points
+*/
 function drawLine( fromX, fromY,  toX,  toY){
     ctx.moveTo(fromX, fromY);
     ctx.lineTo(toX,toY);
