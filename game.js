@@ -1,11 +1,13 @@
 var canvas;
 var ctx;
 var dimension = 600;
-var noOfLinesToBeDrawn = 6;
+var noOfLinesToBeDrawn = 5;
 //var height = 600;
 var PERSON_COUNT = 0;
 var PLAYERS_LIST = new Array();
 var USED_AVATAR_ID_LIST = new Array();
+
+//TODO allow spectators, they can join a player, they should also be able to join game in case some one becomes inactive
 
 var PLAYER_ITEM_STATE = {
 	HOME : 0,
@@ -31,13 +33,38 @@ window.onload = function(){
 	//code to draw the board
     canvas = document.getElementById('game-board');
     ctx = canvas.getContext('2d');
-    drawBoard();
+    //drawBoard();
+	drawTableBoard();
 	addPlayerToGame(new Player("Pralhad","10"));
 	addPlayerToGame(new Player("Pralhad","11"));
 	addPlayerToGame(new Player("Pralhad","12"));
 	addPlayerToGame(new Player("Pralhad","13"));
 	console.log(PLAYERS_LIST);
 	console.log(USED_AVATAR_ID_LIST);
+}
+
+function drawTableBoard(){
+	//special cells
+	//(0,2) (2,0) (2,2) (4,2) (2,4)
+	let specialCellList = new Array("0,2","2,0","2,2","4,2","2,4");
+	let table = document.createElement("table");
+	for(let i = 0 ; i < noOfLinesToBeDrawn ;i++){
+		let tr = document.createElement("tr");
+		for(let j = 0 ; j < noOfLinesToBeDrawn ; j++){
+			let td = document.createElement("td");
+			td.className = "cell";
+			if(i === 2 || j === 2){
+				let searchString = i + "," + j;
+				if(specialCellList.indexOf(searchString) !== -1){
+					td.className += " safecell";
+				}
+			}
+			tr.appendChild(td);
+		}
+		table.appendChild(tr);
+	}
+	let dest = document.getElementById("table-board");	
+	dest.appendChild(table);
 }
 
 function drawBoard(){

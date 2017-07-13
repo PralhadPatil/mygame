@@ -1,0 +1,25 @@
+#table-board{
+	width : 600px;
+	height : 600px;
+}
+table{
+	width : 100%;
+	height : 100%;
+	border : 1px solid black;
+}
+
+.cell,.safecell{
+	border : 2px solid black;
+	background: navajowhite;
+}
+
+.safecell{
+	background: darkseagreen;
+/*	background-image: linear-gradient(
+    to top left,
+    white 48%,
+    black,
+    white 52%
+	);*/
+}
+
