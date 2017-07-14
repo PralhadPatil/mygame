@@ -6,6 +6,9 @@ var noOfLinesToBeDrawn = 5;
 var PERSON_COUNT = 0;
 var PLAYERS_LIST = new Array();
 var USED_AVATAR_ID_LIST = new Array();
+//special cells
+//(0,2) (2,0) (2,2) (4,2) (2,4)
+var specialCellList = new Array("0,2","2,0","2,2","4,2","2,4");
 
 //TODO allow spectators, they can join a player, they should also be able to join game in case some one becomes inactive
 
@@ -44,9 +47,6 @@ window.onload = function(){
 }
 
 function drawTableBoard(){
-	//special cells
-	//(0,2) (2,0) (2,2) (4,2) (2,4)
-	let specialCellList = new Array("0,2","2,0","2,2","4,2","2,4");
 	let table = document.createElement("table");
 	for(let i = 0 ; i < noOfLinesToBeDrawn ;i++){
 		let tr = document.createElement("tr");
@@ -66,32 +66,12 @@ function drawTableBoard(){
 	let dest = document.getElementById("table-board");	
 	dest.appendChild(table);
 }
-
-function drawBoard(){
-	canvas.width = canvas.height = dimension;
-    var offset = dimension / noOfLinesToBeDrawn;
-    var startX = canvas.offsetLeft;
-    var startY = canvas.offsetTop;
-    
-    for(var i = 0; i <= noOfLinesToBeDrawn; i++){
-        drawLine(startX + (offset * i),
-                 startY,
-                 startX + (offset * i),
-                 startY + canvas.height
-                );
-		drawLine(startX,
-				 startY + (offset * i),
-				 startX + canvas.width,
-				 startY + (offset * i)
-				);
-    }
-}
-
+ 
 function addPlayerToGame(personObject){
 	if(personObject.id > 3){
 		//TODO : can add feature to replace existing player 
 		//Player has to mark himself inactive to do this
-		alert("No more than 4 people are allowed");
+		alert("No more than 4 people are allowed!! You may be specatator if you want");
 		return;
 	}
 	if(USED_AVATAR_ID_LIST.indexOf(personObject.playerItemList[0].avatarId) !== -1){
@@ -133,19 +113,31 @@ var PlayItem = function(avatarId,personId){
 	};
 }
 
-
 /*
 	Function to draw line between 2 points
 */
-function drawLine( fromX, fromY,  toX,  toY){
-    ctx.moveTo(fromX, fromY);
-    ctx.lineTo(toX,toY);
-    ctx.stroke();
-}
+//function drawLine( fromX, fromY,  toX,  toY){
+//    ctx.moveTo(fromX, fromY);
+//    ctx.lineTo(toX,toY);
+//    ctx.stroke();
+//}
 
-/*
-	Function which will initialize the players information
-*/
-function initializePlayer(playerData){
-	console.log("Initializing players");
-}
+//function drawBoard(){
+//	canvas.width = canvas.height = dimension;
+//    var offset = dimension / noOfLinesToBeDrawn;
+//    var startX = canvas.offsetLeft;
+//    var startY = canvas.offsetTop;
+//    
+//    for(var i = 0; i <= noOfLinesToBeDrawn; i++){
+//        drawLine(startX + (offset * i),
+//                 startY,
+//                 startX + (offset * i),
+//                 startY + canvas.height
+//                );
+//		drawLine(startX,
+//				 startY + (offset * i),
+//				 startX + canvas.width,
+//				 startY + (offset * i)
+//				);
+//    }
+//}

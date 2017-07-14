@@ -9,8 +9,8 @@ table{
 }
 
 .cell,.safecell{
-	border : 2px solid black;
-	background: navajowhite;
+	border : 1px solid black;
+	background: navajowhite; 
 }
 
 .safecell{
