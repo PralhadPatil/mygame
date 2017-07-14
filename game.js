@@ -51,9 +51,9 @@ window.onload = function(){
 	//code to draw the board
 	drawTableBoard();
 	addPlayerToGame(new Player("Pralhad","10"));
-	addPlayerToGame(new Player("Pralhad","11"));
-	addPlayerToGame(new Player("Pralhad","12"));
-	addPlayerToGame(new Player("Pralhad","13"));
+//	addPlayerToGame(new Player("Pralhad","11"));
+//	addPlayerToGame(new Player("Pralhad","12"));
+//	addPlayerToGame(new Player("Pralhad","13"));
 //	console.log(PLAYERS_LIST);
 //	console.log(USED_AVATAR_ID_LIST);
 //  testPlayerPath(PLAYERS_LIST[0]);
@@ -104,6 +104,8 @@ function addPlayerToGame(personObject){
 		
 	PLAYERS_LIST.push(personObject);
 	USED_AVATAR_ID_LIST.push(personObject.playerItemList[0].avatarId);
+	
+	renderPersonInUI(personObject);
 }
 /*
 	Factory genearating players
@@ -151,12 +153,27 @@ var PlayItem = function(avatarId,personId){
 		"personId" : personId,
 		"statePosition" : 0,
 		"distanceFromHome" : 0,
-		"itemState" : PLAYER_ITEM_STATE.HOME
+		"itemState" : PLAYER_ITEM_STATE.HOME,
+		"uiItem" : undefined,
+		"createUIItem" : function(instanceId){
+			//alert("I'll create UI items for player");
+			this.uiItem = document.createElement("span");
+			this.uiItem.classList.add("player-span");
+			let pawnId = "person" + this.personId + "-pawn" + instanceId;
+			this.uiItem.id = pawnId;
+		},
+		"moveTo" : function(destinationCellId){
+			//alert("This function will move the pawn");
+			let destCell = document.getElementById(destinationCellId);
+			destCell.appendChild(this.uiItem);
+		}
 	};
 }
 
 function rollDice(){
 	DICE.length = 0; // clear the array
+	let scoreHTML = document.getElementById("score");
+	scoreHTML.innerHTML = "";
 	for(let i = 0 ; i < 4; i++) {// there will be 4 dice
 		DICE[i] = Math.floor((Math.random() * 10 ) % 2);
 	}
@@ -168,6 +185,17 @@ function rollDice(){
 	}
 	if(value === 0 ) // all are black means it is 8
 		value = 8;
-	console.log(DICE);
-	console.log(value);
+	scoreHTML.innerHTML = "You Got : " + value;
+//	console.log(DICE);
+//	console.log(value);
+}
+
+function renderPersonInUI(personObject){
+	var homeCell = document.getElementById(PATHS_LIST[personObject.homeIndex][0]);
+	PATHS_LIST[personObject.homeIndex][0];
+	//homeCell.innerHTML = "Obj of " + personObject.id;
+	for(let i = 0; i < 4;i++){
+		personObject.playerItemList[i].createUIItem(i);
+		personObject.playerItemList[i].moveTo(PATHS_LIST[personObject.homeIndex][0]);
+	}
 }
