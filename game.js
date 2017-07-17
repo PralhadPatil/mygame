@@ -50,10 +50,10 @@ window.onload = function(){
 	
 	//code to draw the board
 	drawTableBoard();
-	addPlayerToGame(new Player("Pralhad","10"));
-	addPlayerToGame(new Player("Pralhad","11"));
-	addPlayerToGame(new Player("Pralhad","12"));
-	addPlayerToGame(new Player("Pralhad","13"));
+//	addPlayerToGame(new Player("Pralhad","10"));
+//	addPlayerToGame(new Player("Pralhad","11"));
+//	addPlayerToGame(new Player("Pralhad","12"));
+//	addPlayerToGame(new Player("Pralhad","13"));
 //	console.log(PLAYERS_LIST);
 //	console.log(USED_AVATAR_ID_LIST);
 //  testPlayerPath(PLAYERS_LIST[0]);
@@ -68,6 +68,13 @@ function testPlayerPath(player){
 	}
 }
 
+function startGame(){
+	//alert("Starting game");
+	if(PERSON_COUNT < 2)
+		alert("Cannot start game, Add players from command.");
+	console.log("Game started!!");
+}
+
 function drawTableBoard(){
 	let table = document.createElement("table");
 	for(let i = 0 ; i < noOfLinesToBeDrawn ;i++){
@@ -76,6 +83,10 @@ function drawTableBoard(){
 			let td = document.createElement("td");
 			td.className = "cell";
 			td.id = i+""+j;
+			//td.ondrop = "drop(event)";
+			//td.ondragover = "allowDrop(event)";
+			this.addEventListener('drop', function() {drop(event)}, false);
+			this.addEventListener('dragover', function() {allowDrop(event)}, false);
 			if(i === 2 || j === 2){
 				let searchString = i + "," + j;
 				if(specialCellList.indexOf(searchString) !== -1){
@@ -89,8 +100,13 @@ function drawTableBoard(){
 	let dest = document.getElementById("table-board");	
 	dest.appendChild(table);
 }
+
+
  
-function addPlayerToGame(personObject){
+//function addPlayerToGame(personObject){
+function addPlayerToGame(){
+	let name = prompt("What is your name??");
+	let personObject = new Player(name,PERSON_COUNT);
 	if(personObject.id > 3){
 		//TODO : can add feature to replace existing player 
 		//Player has to mark himself inactive to do this
@@ -160,6 +176,8 @@ var PlayItem = function(avatarId,personId){
 			this.uiItem = document.createElement("span");
 			this.uiItem.classList.add("player-span");
 			let pawnId = "person" + this.personId + "-pawn" + instanceId;
+			//this.uiItem.ondragstart = "drag(event)";
+			this.uiItem.addEventListener('dragstart', function() {drag(event)}, false);
 			//this.uiItem.innerHTML = pawnId;
 			//<img class="manImg" src="images/ico_mandatory.gif"></img>
 			let image = document.createElement("img");
@@ -222,4 +240,20 @@ function renderPersonInUI(personObject){
 		personObject.playerItemList[i].createUIItem(i);
 		personObject.playerItemList[i].moveTo(PATHS_LIST[personObject.homeIndex][0]);
 	}
+}
+
+//drag and drop functionality
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
 }
