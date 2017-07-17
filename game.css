@@ -51,11 +51,9 @@ table{
 }
 
 .player-span{
-	width : 20px;
-	height : 20px;
 	z-index : 1000;
-	
 	padding : 2px;
+	display:inline-block;
 }
 
 .player-icon{
@@ -63,3 +61,7 @@ table{
 	height : 50px;
 }
 
+.pawn-higlighted{
+	z-index:-10;
+	border-style:dotted;
+}

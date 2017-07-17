@@ -7,6 +7,7 @@ var PLAYERS_LIST = new Array();
 var USED_AVATAR_ID_LIST = new Array();
 //special cells
 //(0,2) (2,0) (2,2) (4,2) (2,4)
+var CURRENT_PLAYER_INDEX = 0;
 var specialCellList = new Array("0,2","2,0","2,2","4,2","2,4");
 /*
 				Path3
@@ -46,6 +47,7 @@ var BOARD_STATE = {
 var FINISHED_COUNT = 0;
 
 var DICE = new Array();// array which hold state of each dice item
+
 window.onload = function(){
 	
 	//code to draw the board
@@ -57,7 +59,38 @@ window.onload = function(){
 //	console.log(PLAYERS_LIST);
 //	console.log(USED_AVATAR_ID_LIST);
 //  testPlayerPath(PLAYERS_LIST[0]);
+	document.addEventListener("click",handleClickEvent);
+}
 
+function handleClickEvent(event){
+	console.log(event.target);
+	let isSpan = event.target.tagName === "SPAN";
+	let isImage = event.target.tagName === "IMG"
+	if(isSpan || isImage){
+		let toBeProcessedTag = event.target;
+
+		if(isImage){
+			toBeProcessedTag = event.target.parentElement;
+		}
+		var elems = document.querySelectorAll(".player-span")
+		for(let i = 0 ; i < elems.length ; i++)
+			elems[i].classList.remove("pawn-higlighted");
+		toBeProcessedTag.classList.add("pawn-higlighted");
+		let personId = toBeProcessedTag.personId;
+		let itemId = toBeProcessedTag.itemId;
+		//let nextCell = PATHS_LIST[CURRENT_PLAYER_INDEX].homeIndex
+		let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
+		let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[itemId];
+		
+		toBeMovePlayerItem.distanceFromHome += currentDiceValue;
+		let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
+		toBeMovePlayerItem.moveTo(nextLocation);
+		
+		CURRENT_PLAYER_INDEX++;
+		if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
+			CURRENT_PLAYER_INDEX = 0;
+		PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
+	}
 }
 
 function testPlayerPath(player){
@@ -73,7 +106,10 @@ function startGame(){
 	if(PERSON_COUNT < 2)
 		alert("Cannot start game, Add players from command.");
 	console.log("Game started!!");
+	PLAYERS_LIST[CURRENT_PLAYER_INDEX].play();
 }
+
+
 
 function drawTableBoard(){
 	let table = document.createElement("table");
@@ -83,14 +119,10 @@ function drawTableBoard(){
 			let td = document.createElement("td");
 			td.className = "cell";
 			td.id = i+""+j;
-			//td.ondrop = "drop(event)";
-			//td.ondragover = "allowDrop(event)";
-			this.addEventListener('drop', function() {drop(event)}, false);
-			this.addEventListener('dragover', function() {allowDrop(event)}, false);
 			if(i === 2 || j === 2){
 				let searchString = i + "," + j;
 				if(specialCellList.indexOf(searchString) !== -1){
-					td.className += " safecell";
+					td.classList.add("safecell");
 				}
 			}
 			tr.appendChild(td);
@@ -149,13 +181,18 @@ var Player = function(name,avatarId){
 			
 	//block to create person play items
 	for(let i = 0; i < 4;i++)
-		playerItemList.push(new PlayItem(avatarId,personId));
+		playerItemList.push(new PlayItem(i,avatarId,personId));
 	return {
 		"name":name,
 		"id":personId,
 		"playerItemList":playerItemList,
 		"playerState" : PLAYER_STATE.JOINED,
-		"homeIndex" : homeIndex
+		"homeIndex" : homeIndex,
+		"toBeMovedList" : new Array(),
+		"play" : function(){
+			let diceValue = rollDice();
+			this.toBeMovedList.push(diceValue);
+		}
 	};
 }
 
@@ -163,8 +200,9 @@ var Player = function(name,avatarId){
 	PlayItem Factory
 	Pass id of the avatar you want to set for this player
 */
-var PlayItem = function(avatarId,personId){
+var PlayItem = function(itemId,avatarId,personId){
 	return {
+		"itemId" : itemId,
 		"avatarId" : avatarId,
 		"personId" : personId,
 		"statePosition" : 0,
@@ -175,13 +213,12 @@ var PlayItem = function(avatarId,personId){
 			//alert("I'll create UI items for player");
 			this.uiItem = document.createElement("span");
 			this.uiItem.classList.add("player-span");
+			this.uiItem.personId = this.personId;
+			this.uiItem.itemId = this.itemId;
 			let pawnId = "person" + this.personId + "-pawn" + instanceId;
-			//this.uiItem.ondragstart = "drag(event)";
-			this.uiItem.addEventListener('dragstart', function() {drag(event)}, false);
 			//this.uiItem.innerHTML = pawnId;
 			//<img class="manImg" src="images/ico_mandatory.gif"></img>
 			let image = document.createElement("img");
-			
 			//for time being add different icons for different users
 			//TODO think of better approach for this part
 			let iconImage = "stone.png";
@@ -212,6 +249,7 @@ var PlayItem = function(avatarId,personId){
 	};
 }
 
+
 function rollDice(){
 	DICE.length = 0; // clear the array
 	let scoreHTML = document.getElementById("score");
@@ -228,6 +266,7 @@ function rollDice(){
 	if(value === 0 ) // all are black means it is 8
 		value = 8;
 	scoreHTML.innerHTML = "You Got : " + value;
+	return value;
 //	console.log(DICE);
 //	console.log(value);
 }
@@ -242,18 +281,3 @@ function renderPersonInUI(personObject){
 	}
 }
 
-//drag and drop functionality
-
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-}
