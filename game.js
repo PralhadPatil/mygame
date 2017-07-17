@@ -51,9 +51,9 @@ window.onload = function(){
 	//code to draw the board
 	drawTableBoard();
 	addPlayerToGame(new Player("Pralhad","10"));
-//	addPlayerToGame(new Player("Pralhad","11"));
-//	addPlayerToGame(new Player("Pralhad","12"));
-//	addPlayerToGame(new Player("Pralhad","13"));
+	addPlayerToGame(new Player("Pralhad","11"));
+	addPlayerToGame(new Player("Pralhad","12"));
+	addPlayerToGame(new Player("Pralhad","13"));
 //	console.log(PLAYERS_LIST);
 //	console.log(USED_AVATAR_ID_LIST);
 //  testPlayerPath(PLAYERS_LIST[0]);
@@ -160,6 +160,30 @@ var PlayItem = function(avatarId,personId){
 			this.uiItem = document.createElement("span");
 			this.uiItem.classList.add("player-span");
 			let pawnId = "person" + this.personId + "-pawn" + instanceId;
+			//this.uiItem.innerHTML = pawnId;
+			//<img class="manImg" src="images/ico_mandatory.gif"></img>
+			let image = document.createElement("img");
+			
+			//for time being add different icons for different users
+			//TODO think of better approach for this part
+			let iconImage = "stone.png";
+			switch(this.personId){
+				case 0 : 
+					iconImage = "stone.png";
+					break;
+				case 1 :
+					iconImage = "grain.png";
+					break;
+				case 2 :
+					iconImage = "flower.png";
+					break;
+				case 3 :
+					iconImage = "stick.png";
+					break;
+			}
+			image.src = iconImage;
+			image.classList.add("player-icon");
+			this.uiItem.appendChild(image);
 			this.uiItem.id = pawnId;
 		},
 		"moveTo" : function(destinationCellId){

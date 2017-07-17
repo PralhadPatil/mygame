@@ -21,11 +21,13 @@ table{
 	height : 100%;
 	border : 1px solid black;
 	z-index : -1;
+	table-layout : fixed;
 }
 
 .cell,.safecell{
 	border : 1px solid black;
-	background: navajowhite; 
+	background: navajowhite;
+		
 }
 
 .safecell{
@@ -52,7 +54,12 @@ table{
 	width : 20px;
 	height : 20px;
 	z-index : 1000;
-	background-color : black;
-	background:url(icon.png) no-repeat top left;
+	
+	padding : 2px;
+}
+
+.player-icon{
+	width : 50px;
+	height : 50px;
 }
 
