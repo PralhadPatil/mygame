@@ -72,26 +72,49 @@ function handleClickEvent(event){
 		if(isImage){
 			toBeProcessedTag = event.target.parentElement;
 		}
-		var elems = document.querySelectorAll(".player-span")
-		for(let i = 0 ; i < elems.length ; i++)
-			elems[i].classList.remove("pawn-higlighted");
-		toBeProcessedTag.classList.add("pawn-higlighted");
+		removeSelectionOnAllPawns();
+		
 		let personId = toBeProcessedTag.personId;
-		let itemId = toBeProcessedTag.itemId;
-		//let nextCell = PATHS_LIST[CURRENT_PLAYER_INDEX].homeIndex
-		let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
-		let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[itemId];
+		//check if current player has clicked on pawn
+		if(personId !== CURRENT_PLAYER_INDEX){
+			alert("This is not your turn. Wait for " + PLAYERS_LIST[CURRENT_PLAYER_INDEX].name + " to move");
+			return;
+		}
+		// check if he rolled dice
+		if(PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.length === 0){
+			alert("You did not roll dice!!");
+			return;
+		}
+		toBeProcessedTag.classList.add("pawn-higlighted");
+		//add menu to current span now
+		let ul = document.createElement("ul");
+		ul.classList.add("menu");
+		let li = document.createElement("li");
+		li.innerHTML = "Move places";
+		ul.appendChild(li);
 		
-		toBeMovePlayerItem.distanceFromHome += currentDiceValue;
-		let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
-		toBeMovePlayerItem.moveTo(nextLocation);
-		
-		CURRENT_PLAYER_INDEX++;
-		if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
-			CURRENT_PLAYER_INDEX = 0;
-		PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
+		toBeProcessedTag.appendChild(ul);
+		//let itemId = toBeProcessedTag.itemId;
+		//let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
+		//let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[itemId];
+		//toBeMovePlayerItem.distanceFromHome += currentDiceValue;
+		//let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
+		//toBeMovePlayerItem.moveTo(nextLocation);
+		//
+		//CURRENT_PLAYER_INDEX++;
+		//if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
+		//	CURRENT_PLAYER_INDEX = 0;
+		//PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
 	}
 }
+
+
+function removeSelectionOnAllPawns(){
+	var elems = document.querySelectorAll(".player-span")
+		for(let i = 0 ; i < elems.length ; i++)
+			elems[i].classList.remove("pawn-higlighted");
+}
+
 
 function testPlayerPath(player){
 	for(let j = 0 ; j < 25 ; j++){
