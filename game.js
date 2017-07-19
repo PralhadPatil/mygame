@@ -66,14 +66,13 @@ function handleClickEvent(event){
 	console.log(event.target);
 	let isSpan = event.target.tagName === "SPAN";
 	let isImage = event.target.tagName === "IMG"
+	removeSelectionOnAllPawns();
 	if(isSpan || isImage){
 		let toBeProcessedTag = event.target;
 
 		if(isImage){
 			toBeProcessedTag = event.target.parentElement;
 		}
-		removeSelectionOnAllPawns();
-		
 		let personId = toBeProcessedTag.personId;
 		//check if current player has clicked on pawn
 		if(personId !== CURRENT_PLAYER_INDEX){
@@ -86,14 +85,17 @@ function handleClickEvent(event){
 			return;
 		}
 		toBeProcessedTag.classList.add("pawn-higlighted");
+		let menu = toBeProcessedTag.querySelector(".menu");
+		for(let i = 0; i < PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.length ; i++){
+			let li = document.createElement("li");
+			li.classList.add("menu-item");
+			li.moveDistance = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i];
+			li.innerHTML = "Move " + PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i] +" places";
+			menu.appendChild(li);
+		}
+		menu.classList.add("menu-visible");
+		console.log(menu);
 		//add menu to current span now
-		let ul = document.createElement("ul");
-		ul.classList.add("menu");
-		let li = document.createElement("li");
-		li.innerHTML = "Move places";
-		ul.appendChild(li);
-		
-		toBeProcessedTag.appendChild(ul);
 		//let itemId = toBeProcessedTag.itemId;
 		//let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
 		//let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[itemId];
@@ -111,8 +113,13 @@ function handleClickEvent(event){
 
 function removeSelectionOnAllPawns(){
 	var elems = document.querySelectorAll(".player-span")
-		for(let i = 0 ; i < elems.length ; i++)
+		for(let i = 0 ; i < elems.length ; i++){
 			elems[i].classList.remove("pawn-higlighted");
+			var liList = document.getElementsByClassName("menu-item");
+			for(let j = 0 ; j < liList.length ; j++)
+				liList[j].parentNode.removeChild(liList[j]);
+		}
+			
 }
 
 
@@ -262,6 +269,12 @@ var PlayItem = function(itemId,avatarId,personId){
 			image.src = iconImage;
 			image.classList.add("player-icon");
 			this.uiItem.appendChild(image);
+			
+			//create menu for each pawn
+			let ul = document.createElement("ul");
+			ul.classList.add("menu");
+			this.uiItem.appendChild(ul);
+
 			this.uiItem.id = pawnId;
 		},
 		"moveTo" : function(destinationCellId){

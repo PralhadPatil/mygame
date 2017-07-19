@@ -65,26 +65,32 @@ table{
 	z-index:-10;
 	border-style:dotted;
 }
-ul.menu { 
-	list-style-type: none; 
-	margin: 0; 
-	padding: 0; 
-	display:block;
+.menu { 
+  display: none;
+    z-index: 1000;
+    position: absolute;
+    overflow: hidden;
+    border: 1px solid #CCC;
+    white-space: nowrap;
+    font-family: sans-serif;
+    background: #FFF;
+    color: #333;
+    border-radius: 5px;
+    padding: 0;
 }
 
-ul.menu li { 
-	font: 12px arial; 
-	padding-left: 10px; 
+.menu-visible{
+	display:inline-block;
 }
-a.menulink, li a { 
-	text-decoration: none; 
-	color: #060; 
+
+.menu li{
+	  padding: 8px 12px;
+    cursor: pointer;
+    list-style-type: none;
+    transition: all .3s ease;
+    user-select: none;
 }
-a.menulink { 
-	font-size: 16px; 
-	font-weight: bold; 
-}
-li a:hover { 
-	background-color: #060; 
-	color: white; 
+
+.menu li:hover {
+    background-color: #DEF;
 }
