@@ -65,7 +65,8 @@ window.onload = function(){
 function handleClickEvent(event){
 	console.log(event.target);
 	let isSpan = event.target.tagName === "SPAN";
-	let isImage = event.target.tagName === "IMG"
+	let isImage = event.target.tagName === "IMG";
+	let isLI = event.target.tagName === "LI";
 	removeSelectionOnAllPawns();
 	if(isSpan || isImage){
 		let toBeProcessedTag = event.target;
@@ -89,12 +90,12 @@ function handleClickEvent(event){
 		for(let i = 0; i < PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.length ; i++){
 			let li = document.createElement("li");
 			li.classList.add("menu-item");
-			li.moveDistance = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i];
+			li.setAttribute("moveDistance",PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i]);
+			li.setAttribute("pawnId",toBeProcessedTag.itemId);
 			li.innerHTML = "Move " + PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i] +" places";
 			menu.appendChild(li);
 		}
 		menu.classList.add("menu-visible");
-		console.log(menu);
 		//add menu to current span now
 		//let itemId = toBeProcessedTag.itemId;
 		//let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
@@ -107,6 +108,25 @@ function handleClickEvent(event){
 		//if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
 		//	CURRENT_PLAYER_INDEX = 0;
 		//PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
+	}
+	
+	if(isLI){
+		//alert("LI is clicked");
+		let moveDistance = parseInt(event.target.getAttribute("moveDistance"));
+		//calculate the final cell of this player
+		let pawnId = event.target.getAttribute("pawnId");
+		let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[pawnId];
+		toBeMovePlayerItem.distanceFromHome += moveDistance;
+		let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
+		toBeMovePlayerItem.moveTo(nextLocation);
+		
+		var index = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.indexOf(moveDistance);
+		PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.splice(index, 1);
+
+		CURRENT_PLAYER_INDEX++;
+		if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
+			CURRENT_PLAYER_INDEX = 0;
+		PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
 	}
 }
 
