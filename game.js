@@ -96,18 +96,6 @@ function handleClickEvent(event){
 			menu.appendChild(li);
 		}
 		menu.classList.add("menu-visible");
-		//add menu to current span now
-		//let itemId = toBeProcessedTag.itemId;
-		//let currentDiceValue = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[0];
-		//let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[itemId];
-		//toBeMovePlayerItem.distanceFromHome += currentDiceValue;
-		//let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
-		//toBeMovePlayerItem.moveTo(nextLocation);
-		//
-		//CURRENT_PLAYER_INDEX++;
-		//if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
-		//	CURRENT_PLAYER_INDEX = 0;
-		//PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
 	}
 	
 	if(isLI){
@@ -157,6 +145,8 @@ function startGame(){
 		alert("Cannot start game, Add players from command.");
 	console.log("Game started!!");
 	PLAYERS_LIST[CURRENT_PLAYER_INDEX].play();
+	let playButton = document.getElementById("play-icon");
+	playButton.classList.add("disabled");
 }
 
 
