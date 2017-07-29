@@ -49,16 +49,7 @@ var FINISHED_COUNT = 0;
 var DICE = new Array();// array which hold state of each dice item
 
 window.onload = function(){
-	
-	//code to draw the board
 	drawTableBoard();
-//	addPlayerToGame(new Player("Pralhad","10"));
-//	addPlayerToGame(new Player("Pralhad","11"));
-//	addPlayerToGame(new Player("Pralhad","12"));
-//	addPlayerToGame(new Player("Pralhad","13"));
-//	console.log(PLAYERS_LIST);
-//	console.log(USED_AVATAR_ID_LIST);
-//  testPlayerPath(PLAYERS_LIST[0]);
 	document.addEventListener("click",handleClickEvent);
 }
 
@@ -74,7 +65,7 @@ function handleClickEvent(event){
 		if(isImage){
 			toBeProcessedTag = event.target.parentElement;
 		}
-		let personId = toBeProcessedTag.personId;
+		let personId = parseInt(toBeProcessedTag.getAttribute("personId"));
 		//check if current player has clicked on pawn
 		if(personId !== CURRENT_PLAYER_INDEX){
 			alert("This is not your turn. Wait for " + PLAYERS_LIST[CURRENT_PLAYER_INDEX].name + " to move");
@@ -91,30 +82,31 @@ function handleClickEvent(event){
 			let li = document.createElement("li");
 			li.classList.add("menu-item");
 			li.setAttribute("moveDistance",PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i]);
-			li.setAttribute("pawnId",toBeProcessedTag.itemId);
+			li.setAttribute("pawnId",toBeProcessedTag.getAttribute("itemId"));
 			li.innerHTML = "Move " + PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList[i] +" places";
 			menu.appendChild(li);
 		}
 		menu.classList.add("menu-visible");
 	}
 	
+	//code to move the element to selected distance
 	if(isLI){
-		//alert("LI is clicked");
 		let moveDistance = parseInt(event.target.getAttribute("moveDistance"));
 		//calculate the final cell of this player
 		let pawnId = event.target.getAttribute("pawnId");
 		let toBeMovePlayerItem = PLAYERS_LIST[CURRENT_PLAYER_INDEX].playerItemList[pawnId];
 		toBeMovePlayerItem.distanceFromHome += moveDistance;
 		let nextLocation = PATHS_LIST[PLAYERS_LIST[CURRENT_PLAYER_INDEX].homeIndex][toBeMovePlayerItem.distanceFromHome];
-		toBeMovePlayerItem.moveTo(nextLocation);
+		let playerItemMoved = toBeMovePlayerItem.moveTo(nextLocation);
 		
-		var index = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.indexOf(moveDistance);
-		PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.splice(index, 1);
-
-		CURRENT_PLAYER_INDEX++;
-		if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
-			CURRENT_PLAYER_INDEX = 0;
-		PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
+		if(playerItemMoved === true){
+			var index = PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.indexOf(moveDistance);
+			PLAYERS_LIST[CURRENT_PLAYER_INDEX].toBeMovedList.splice(index, 1);
+			CURRENT_PLAYER_INDEX++;
+			if(CURRENT_PLAYER_INDEX >= PERSON_COUNT)
+				CURRENT_PLAYER_INDEX = 0;
+			PLAYERS_LIST[CURRENT_PLAYER_INDEX].play(); //thinking by this time item is moved
+		}
 	}
 }
 
@@ -250,14 +242,11 @@ var PlayItem = function(itemId,avatarId,personId){
 		"itemState" : PLAYER_ITEM_STATE.HOME,
 		"uiItem" : undefined,
 		"createUIItem" : function(instanceId){
-			//alert("I'll create UI items for player");
 			this.uiItem = document.createElement("span");
 			this.uiItem.classList.add("player-span");
-			this.uiItem.personId = this.personId;
-			this.uiItem.itemId = this.itemId;
+			this.uiItem.setAttribute("personId",this.personId);
+			this.uiItem.setAttribute("itemId",this.itemId);
 			let pawnId = "person" + this.personId + "-pawn" + instanceId;
-			//this.uiItem.innerHTML = pawnId;
-			//<img class="manImg" src="images/ico_mandatory.gif"></img>
 			let image = document.createElement("img");
 			//for time being add different icons for different users
 			//TODO think of better approach for this part
@@ -288,9 +277,25 @@ var PlayItem = function(itemId,avatarId,personId){
 			this.uiItem.id = pawnId;
 		},
 		"moveTo" : function(destinationCellId){
-			//alert("This function will move the pawn");
 			let destCell = document.getElementById(destinationCellId);
+			//if the target has other items inside it
+			let currentItemsListInCell = destCell.querySelectorAll(".player-span");
+			if(!destCell.classList.contains("safecell") && currentItemsListInCell.length !== 0){
+				let alreadyPresentItem = currentItemsListInCell[0];
+				let alreadyPresentItemPersonId = parseInt(alreadyPresentItem.getAttribute("personId"));
+				console.log("Existing pawn belongs to " + personId);
+				if(this.personId !== alreadyPresentItemPersonId){ //move the previous one to his home
+					let existingPlayItemHome = PATHS_LIST[PLAYERS_LIST[alreadyPresentItemPersonId].homeIndex][0];
+					PLAYERS_LIST[alreadyPresentItemPersonId].playerItemList[alreadyPresentItem.getAttribute("itemId")].moveTo(existingPlayItemHome); 
+					destCell.appendChild(this.uiItem);
+					return true; 
+				}
+				else{
+					return false;
+				}
+			}
 			destCell.appendChild(this.uiItem);
+			return true; 
 		}
 	};
 }
@@ -313,8 +318,6 @@ function rollDice(){
 		value = 8;
 	scoreHTML.innerHTML = "You Got : " + value;
 	return value;
-//	console.log(DICE);
-//	console.log(value);
 }
 
 function renderPersonInUI(personObject){
